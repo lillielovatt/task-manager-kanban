@@ -4,6 +4,7 @@ var taskIdCounter = 0;
 var pageContentEl = document.querySelector("#page-content");
 var tasksInProgressEl = document.querySelector("#tasks-in-progress");
 var tasksCompletedEl = document.querySelector("#tasks-completed");
+var tasks=[];
 
 // The El suffix identifies this as a DOM element; this naming convention will help us keep track of which variables store DOM elements.
 
@@ -29,7 +30,8 @@ var taskFormHandler = function (event) {
     else {
         var taskDataObj = {
             name: taskNameInput,
-            type: taskTypeInput
+            type: taskTypeInput,
+            status:'to do'
         };
 
         createTaskEl(taskDataObj);
@@ -40,10 +42,16 @@ var completeEditTask = function(taskName, taskType, taskId){
     var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
     taskSelected.querySelector("h3.task-name").textContent=taskName;
     taskSelected.querySelector("span.task-type").textContent=taskType;
+    for(let i=0; i<tasks.length; i++){
+        if(tasks[i].id===parseInt(taskId)){
+            tasks[i].name=taskName;
+            tasks[i].type=taskType;
+        }
+    }
     alert("Task updated!");
     formEl.removeAttribute("data-task-id");
     document.querySelector("#save-task").textContent="Add Task";
-}
+};
 
 var createTaskEl = function (taskDataObj) {
     // create list
@@ -64,9 +72,10 @@ var createTaskEl = function (taskDataObj) {
     // adds list to ul
     var taskActionsEl = createTaskActions(taskIdCounter);
     listItemEl.appendChild(taskActionsEl);
-
     tasksToDoEl.appendChild(listItemEl);
 
+    taskDataObj.id=taskIdCounter;
+    tasks.push(taskDataObj);
     // increase task counter for next unique id
     taskIdCounter++;
 
@@ -109,9 +118,6 @@ var createTaskActions = function (taskId) {
     return actionContainerEl;
 };
 
-
-
-
 var taskButtonHandler = function (event) {
     var targetEl = event.target;
     if (targetEl.matches(".edit-btn")) {
@@ -126,6 +132,13 @@ var taskButtonHandler = function (event) {
 var deleteTask = function (taskId) {
     var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
     taskSelected.remove();
+    var updatedTaskArr=[];
+    for(let i=0; i<tasks.length; i++){
+        if(tasks[i].id !== parseInt(taskId)){
+            updatedTaskArr.push(tasks[i]);
+        }
+    }
+    tasks=updatedTaskArr;
 };
 
 var editTask = function (taskId) {
@@ -145,7 +158,6 @@ var editTask = function (taskId) {
 
 };
 
-
 var taskStatusChangeHandler=function(event){
     // it didn't create a copy of the task. It actually moved the task item from its original location in the DOM into the other <ul>.
     // It's important to note that the variable taskSelected didn't create a second <li>.
@@ -160,8 +172,13 @@ var taskStatusChangeHandler=function(event){
     } else if(statusValue==="completed"){
         tasksCompletedEl.appendChild(taskSelected);
     }
+    for(let i=0; i<tasks.length; i++){
+        if(tasks[i].id===parseInt(taskId)){
+            tasks[i].status=statusValue;
+        }
+    }
 
-}
+};
 
 formEl.addEventListener("submit", taskFormHandler);
 pageContentEl.addEventListener("click", taskButtonHandler);
