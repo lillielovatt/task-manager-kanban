@@ -188,45 +188,51 @@ var saveTasks = function(){
 // Converts tasks from the string format back into an array of objects.
 // Iterates through a tasks array and creates task elements on the page from it.
 var loadTasks= function(){
-    tasks = localStorage.getItem("tasks");
+    var savedTasks = localStorage.getItem("tasks");
     if(tasks===null){
-        tasks=[];
         return false;
     }
-    tasks=JSON.parse(tasks);
-    for(let i=0;i<tasks.length;i++){
-        tasks[i].id=taskIdCounter;
-        // why?what? If we don't reset the taskId here, we could end up with the random Ids they had before, leading to 2 tasks having the same ID.
-        // since Ids don't really need to be saved, and are only used/necessary for uniqueness purposes, then it makes sense
-        // to tie them to the counter we created, restarting them at 0....length-1, every time we reload.
-        var listItemEl = document.createElement("li");
-        listItemEl.className = "task-item";
-        listItemEl.setAttribute("data-task-id", tasks[i].id);
-
-        // create div
-        var taskInfoEl = document.createElement("div");
-        taskInfoEl.className = "task-info";
-
-        // add HTML to div, then to list
-        taskInfoEl.innerHTML = "<h3 class='task-name'>" + tasks[i].name + "</h3><span class='task-type'>" + tasks[i].type + "</span>";
-        listItemEl.appendChild(taskInfoEl);
-
-        // adds list to ul
-        var taskActionsEl = createTaskActions(tasks[i].id);
-        listItemEl.appendChild(taskActionsEl);
-        if(tasks[i].status==="to do"){
-            listItemEl.querySelector("select[name='status-change']").selectedIndex =0;
-            tasksToDoEl.appendChild(listItemEl);
-        } else if(tasks[i].status==="in progress"){
-            listItemEl.querySelector("select[name='status-change']").selectedIndex =1;
-            tasksInProgressEl.appendChild(listItemEl);
-        } else if(tasks[i].status==="completed"){
-            listItemEl.querySelector("select[name='status-change']").selectedIndex =2;
-            tasksCompletedEl.appendChild(listItemEl);
-        }
-
-        taskIdCounter++;
+    savedTasks=JSON.parse(savedTasks);
+    console.log(savedTasks);
+    console.log(savedTasks[1].name);
+    console.log(savedTasks[1]);
+    for(let i=0;i<savedTasks.length;i++){
+        createTaskEl(savedTasks[i]);
     }
+
+    // for(let i=0;i<tasks.length;i++){
+    //     tasks[i].id=taskIdCounter;
+    //     // why?what? If we don't reset the taskId here, we could end up with the random Ids they had before, leading to 2 tasks having the same ID.
+    //     // since Ids don't really need to be saved, and are only used/necessary for uniqueness purposes, then it makes sense
+    //     // to tie them to the counter we created, restarting them at 0....length-1, every time we reload.
+    //     var listItemEl = document.createElement("li");
+    //     listItemEl.className = "task-item";
+    //     listItemEl.setAttribute("data-task-id", tasks[i].id);
+
+    //     // create div
+    //     var taskInfoEl = document.createElement("div");
+    //     taskInfoEl.className = "task-info";
+
+    //     // add HTML to div, then to list
+    //     taskInfoEl.innerHTML = "<h3 class='task-name'>" + tasks[i].name + "</h3><span class='task-type'>" + tasks[i].type + "</span>";
+    //     listItemEl.appendChild(taskInfoEl);
+
+    //     // adds list to ul
+    //     var taskActionsEl = createTaskActions(tasks[i].id);
+    //     listItemEl.appendChild(taskActionsEl);
+    //     if(tasks[i].status==="to do"){
+    //         listItemEl.querySelector("select[name='status-change']").selectedIndex =0;
+    //         tasksToDoEl.appendChild(listItemEl);
+    //     } else if(tasks[i].status==="in progress"){
+    //         listItemEl.querySelector("select[name='status-change']").selectedIndex =1;
+    //         tasksInProgressEl.appendChild(listItemEl);
+    //     } else if(tasks[i].status==="completed"){
+    //         listItemEl.querySelector("select[name='status-change']").selectedIndex =2;
+    //         tasksCompletedEl.appendChild(listItemEl);
+    //     }
+
+    //     taskIdCounter++;
+    // }
 }
 
 formEl.addEventListener("submit", taskFormHandler);
